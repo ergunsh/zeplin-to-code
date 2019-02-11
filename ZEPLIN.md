@@ -14,7 +14,7 @@ __Component__ is the entity representing a design element that can be contained 
 
 ## The connection of this project with Zeplin
 ### Zeplin as a platform
-Since the platform shows the designs in a helpful manner. We will be able to inspect screen and data structures visually with the help of Zeplin.
+Since the platform shows the designs in a helpful manner. We will be able to inspect screen's data structures visually with the help of Zeplin.
 
 ### Zeplin as a data source
 Zeplin generates data from Sketch, Photoshop drawings automatically and we will be able to use that data to represent a drawing.
