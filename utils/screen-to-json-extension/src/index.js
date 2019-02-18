@@ -1,46 +1,26 @@
-const stringify = require("fast-safe-stringify");
-
-function layer(context, selectedLayer) {
-
-}
+const circularStringify = function circularJSONStringify(obj) {
+    const cache = [];
+    const result = JSON.stringify(obj, (key, value) => {
+        if (typeof value === "object" && value !== null) {
+            if (cache.indexOf(value) !== -1) {
+                // Circular reference found, discard key
+                return;
+            }
+            // Store value in our collection
+            cache.push(value);
+        }
+        return value;
+    });
+    cache.length = 0;
+    return result;
+};
 
 function screen(context, selectedVersion, selectedScreen) {
     console.log("context", context);
-    console.log("selectedVersion", stringify(selectedVersion.layers));
+    console.log("selectedVersion", circularStringify(selectedVersion.layers));
     console.log("selectedScreen", selectedScreen);
 }
 
-function component(context, selectedVersion, selectedComponent) {
-
-}
-
-function styleguideColors(context, colors) {
-
-}
-
-function styleguideTextStyles(context, textStyles) {
-
-}
-
-function exportStyleguideColors(context, colors) {
-
-}
-
-function exportStyleguideTextStyles(context, textStyles) {
-
-}
-
-function comment(context, text) {
-
-}
-
 export default {
-    layer,
-    screen,
-    component,
-    styleguideColors,
-    styleguideTextStyles,
-    exportStyleguideColors,
-    exportStyleguideTextStyles,
-    comment
+    screen
 };

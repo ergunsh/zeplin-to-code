@@ -18,7 +18,7 @@ The aim of the project is to generate semantic UI code from Zeplin screens and c
     - `StyleSheet` - a component to specify visual and layout properties of a component very similar to CSS StyleSheets.
 
 With the help of these definitions; we can rephrase our aim as to translate a design represented by well defined data structures to JSX code with React Native components.
-## Requirements
+## High Level Requirements
 * Output of the generated code shall match the design specs given by screen and component data structures.
 * Generated code shall be usable by a developer building on top of the design given by data structures. So, a typical workflow of a developer could be; `see the design -> generate code of the design -> implement business logic over that generated UI code`.
 * Generated code shall contain not only presentation of the design but semantics of the design elements. (A paragraph shall be `<p>`)
