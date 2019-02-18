@@ -1,0 +1,23 @@
+{
+  "name": "screen-to-json-extension.js",
+  "version": "0.1.0",
+  "description": "Sample extension description.",
+  "scripts": {
+    "start": "zem start",
+    "build": "zem build",
+    "clean": "zem clean",
+    "exec": "zem exec",
+    "publish": "zem publish"
+  },
+  "zeplin": {
+    "displayName": "screen-to-json-extension.js",
+    "projectTypes": [
+      "web"
+    ]
+  },
+  "dependencies": {
+    "fast-safe-stringify": "^2.0.6",
+    "json-stringify": "^1.0.0",
+    "zem": "^0.3.5"
+  }
+}
