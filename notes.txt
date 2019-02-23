@@ -1,0 +1,22 @@
+- Children mi kardesi mi?
+- Padding mi margin mi gosterelim diye option olabilir
+- Display type karar vermem gerekiyo
+- Marginlerin dogru olarak hesaplanmasi bi requirement
+- Unit test olarak marginleri dogru olarak hesapladik mi deneyebiliriz
+- Cocuk mudur parent midir testi yazabiliriz
+- Designerlar direktif vermisse direkt kullanabiliriz
+- Pozisyonunun center mi, left justified mi oldugunu anlayabilmek
+
+* The system shall correctly calculate the positioning of the element. Center, space-between, space-around. Tek element icin
+* The system shall correctly calculate the positions of series of elements.
+-> olasi outputlari yaz, simple caseler icin input output generate et
+Requirementlari cok guzel yaz:
+tam ne yazcaz
+
+---
+- Tum requirementlari yaz
+- Basit bir requirementi implement et
+
+- High level pseudo code yaz.
+- Farkli caseler icin unit testler yaz.
+- Layout kisminda iyi oldugumuz zaman git gide problemi karisiklastiralim
