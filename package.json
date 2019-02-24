@@ -1,0 +1,24 @@
+{
+  "name": "zeplin-screen-to-code",
+  "version": "1.0.0",
+  "description": "The aim of the project is to generate semantic UI code from Zeplin screens and components in React Native.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ergunsh/zeplin-to-code.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ergunsh/zeplin-to-code/issues"
+  },
+  "homepage": "https://github.com/ergunsh/zeplin-to-code#readme"
+}
