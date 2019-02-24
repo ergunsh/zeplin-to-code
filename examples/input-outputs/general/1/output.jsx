@@ -1,5 +1,3 @@
-// Playground link: https://codesandbox.io/s/myyn4k6vwj
-
 <View
     style={{
         display: "flex",
