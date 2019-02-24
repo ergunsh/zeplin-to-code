@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/ergunsh/zeplin-to-code/issues"
   },
-  "homepage": "https://github.com/ergunsh/zeplin-to-code#readme"
+  "homepage": "https://github.com/ergunsh/zeplin-to-code#readme",
+  "dependencies": {
+    "common-tags": "^1.8.0"
+  }
 }

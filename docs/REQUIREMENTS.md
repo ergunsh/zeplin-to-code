@@ -11,3 +11,5 @@ design described by the json object 100%. The design described by the json objec
 * The system shall have an option for the users of the system to choose to calculate position of a view by giving `padding` to its container or giving `margin` to view itself.
 * The system shall correctly calculate parent - children relationship of views.
 * The system shall correctly calculate positioning of a child with respect to its position in container and its position with respect to its siblings. These position determining properties of a view are `margin` and `padding`.
+
+* The user shall be able to use the system from the Zeplin platform. (The system shall be a Zeplin extension).
