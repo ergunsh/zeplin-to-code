@@ -1,7 +1,7 @@
 ## Requirements
 * The system shall correctly generate valid React Native code with proper styling of components such that the code rendered on a platform (currently; web, android and ios) would match the
 design described by the json object 100%. The design described by the json object has also a png version to check whether design matches or not.
-* The system shall correctly classify the display property of a view according to its positioning in the container it belongs and its children's positioning. The valid display properties are `block` and `flex`.
+* The system shall correctly classify the display property of a view according to its children's positioning. The valid display properties are `block` and `flex`.
 * The system shall correctly give layout properties of a flex container. (`flex-direction`, `flex-wrap`, `justify-content` and `align-items`).
 * The system shall correctly determine whether `flex-direction` is `row` or `column`.
 * The system shall correctly determine whether `flex-wrap` is `wrap`, `nowrap`.
