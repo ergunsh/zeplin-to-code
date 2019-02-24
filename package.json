@@ -8,7 +8,7 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,10 @@
   },
   "homepage": "https://github.com/ergunsh/zeplin-to-code#readme",
   "dependencies": {
-    "common-tags": "^1.8.0"
+    "common-tags": "^1.8.0",
+    "jest": "^24.1.0"
+  },
+  "devDependencies": {
+    "@babel/parser": "^7.3.3"
   }
 }
