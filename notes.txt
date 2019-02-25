@@ -20,3 +20,12 @@ tam ne yazcaz
 - High level pseudo code yaz.
 - Farkli caseler icin unit testler yaz.
 - Layout kisminda iyi oldugumuz zaman git gide problemi karisiklastiralim
+
+---
+- Basit caseleri kodlayip bitireyim, sonra ekstrem caselere yogunlasabiliriz
+- Neden bi child oldugunda column dondugunu acikla
+- Pseudo code paragraf olmasin, kod gibi olsun
+- Tum propertiler icin unit testleri yaz
+- Tum testlerin resimleri olsun
+- Midterm raporu icin input resimden sunu anlayabiliyorum diyebiliyo olurum. Pseudocode'lari da koda koyayim.
+- Input toplayip labelleyip caselere bakmamiz lazim.
