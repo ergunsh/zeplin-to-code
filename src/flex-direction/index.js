@@ -17,6 +17,7 @@ function generateFlexDirection(layer) {
     }
 
     if (children.length === 1) {
+        // Default value
         return DIRECTION_COLUMN;
     }
 
@@ -26,8 +27,10 @@ function generateFlexDirection(layer) {
         const latterChild = children[i + 1];
         const xDifference = latterChild.rect.x - formerChild.rect.x;
         const yDifference = latterChild.rect.y - formerChild.rect.y;
+        // Check xDifference and yDifference to see whether the rectangles can be laid in a column
         if (xDifference === 0 && yDifference >= formerChild.rect.height) {
             if (direction === DIRECTION_ROW) {
+                // We've calculated direction as row for previous children but we need column for current children
                 throw new Error("Found DIRECTION_ROW but calculated DIRECTION_COLUMN");
             }
 
@@ -35,7 +38,9 @@ function generateFlexDirection(layer) {
             break;
         }
 
+        // Check xDifference and yDifference to see whether the rectangles can be laid in a row
         if (yDifference === 0 && xDifference >= formerChild.rect.width) {
+            // We've calculated direction as column for previous children but we need column for current children
             if (direction === DIRECTION_COLUMN) {
                 throw new Error("Found DIRECTION_COLUMN but calculated DIRECTION_ROW");
             }
