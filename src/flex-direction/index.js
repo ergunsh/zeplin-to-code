@@ -31,7 +31,8 @@ function generateFlexDirection(layer) {
                 throw new Error("Found DIRECTION_ROW but calculated DIRECTION_COLUMN");
             }
 
-            return DIRECTION_COLUMN;
+            direction = DIRECTION_COLUMN;
+            break;
         }
 
         if (yDifference === 0 && xDifference >= formerChild.rect.width) {
@@ -39,7 +40,8 @@ function generateFlexDirection(layer) {
                 throw new Error("Found DIRECTION_COLUMN but calculated DIRECTION_ROW");
             }
 
-            return DIRECTION_ROW;
+            direction = DIRECTION_ROW;
+            break;
         }
 
         throw new Error(stripIndent`
@@ -49,6 +51,8 @@ function generateFlexDirection(layer) {
             ${util.inspect(latterChild.rect, { colors: true })}
         `);
     }
+
+    return direction;
 }
 
 module.exports = {
