@@ -1,13 +1,29 @@
 ## Flex direction determination algorithm
 For a flex container;
+input: group layer
+output: flex-direction property or error
+```
+if layer.children.length === 1
+    then:
+        return "column"
 
-#### If it has only one child
-return __column__
+if layer.children.length > 1
+    then:
+        for i = 0 to children.length - 1:
+            formerChild <- children[i]
+            latterChild <- children[i + 1]
+            xDifference <- latterChild.rect.x - formerChild.rect.x
+            yDifference <- latterChild.rect.y - formerChild.rect.y
+            if xDiffence == 0 and yDifference >= formerChild.rect.height
+                then:
+                    direction <- "column"
+                    break;
 
-#### If it has two or more children
-__then__
-- If all of the children have the same x values and their y values are different and this difference between two consecutive elements is bigger than or equal to the height of the former; then return __column__
-- If all of the children have the same y values and their x values are different and this difference between two consecutive elements is bigger than or equal to the width of the former; then return __row__
+            if yDifference ==0 and xDifference >= formerChild.rect.width
+                then:
+                    direction <- "row"
+                    break;
 
-__else__
-- throw error
+            throw error ("the two child cannot be laid off in a flex container")
+    return direction
+```
