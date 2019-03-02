@@ -25,7 +25,7 @@ tam ne yazcaz
 - Basit caseleri kodlayip bitireyim, sonra ekstrem caselere yogunlasabiliriz
 - Neden bi child oldugunda column dondugunu acikla
 - Pseudo code paragraf olmasin, kod gibi olsun
-- Tum propertiler icin unit testleri yaz
 - Tum testlerin resimleri olsun
+- Tum propertiler icin unit testleri yaz
 - Midterm raporu icin input resimden sunu anlayabiliyorum diyebiliyo olurum. Pseudocode'lari da koda koyayim.
 - Input toplayip labelleyip caselere bakmamiz lazim.

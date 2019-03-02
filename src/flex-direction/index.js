@@ -18,7 +18,7 @@ function generateFlexDirection(layer) {
 
     if (children.length === 1) {
         // Default value
-        return DIRECTION_COLUMN;
+        return DIRECTION_ROW;
     }
 
     let direction;

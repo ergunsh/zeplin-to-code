@@ -5,7 +5,7 @@ output: flex-direction property or error
 ```
 if layer.children.length === 1
     then:
-        return "column"
+        return "row"
 
 if layer.children.length > 1
     then:
