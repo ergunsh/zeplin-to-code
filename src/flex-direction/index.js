@@ -22,7 +22,7 @@ function generateFlexDirection(layer) {
     }
 
     let direction;
-    for (const i = 0; i < children.length - 1; i++) {
+    for (let i = 0; i < children.length - 1; i++) {
         const formerChild = children[i];
         const latterChild = children[i + 1];
         const xDifference = latterChild.rect.x - formerChild.rect.x;
@@ -35,7 +35,7 @@ function generateFlexDirection(layer) {
             }
 
             direction = DIRECTION_COLUMN;
-            break;
+            continue;
         }
 
         // Check xDifference and yDifference to see whether the rectangles can be laid in a row
@@ -46,7 +46,7 @@ function generateFlexDirection(layer) {
             }
 
             direction = DIRECTION_ROW;
-            break;
+            continue;
         }
 
         throw new Error(stripIndent`

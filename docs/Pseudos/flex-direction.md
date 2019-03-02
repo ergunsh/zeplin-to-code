@@ -17,12 +17,12 @@ if layer.children.length > 1
             if xDiffence == 0 and yDifference >= formerChild.rect.height
                 then:
                     direction <- "column"
-                    break;
+                    continue;
 
             if yDifference ==0 and xDifference >= formerChild.rect.width
                 then:
                     direction <- "row"
-                    break;
+                    continue;
 
             throw error ("the two child cannot be laid off in a flex container")
     return direction
