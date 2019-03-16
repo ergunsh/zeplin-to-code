@@ -1,0 +1,18 @@
+{
+  "name": "scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --max-old-space-size=16384 index.js > report.log",
+    "startCopy": "while true; do cp -r out out.bak; sleep 10; done",
+    "logToStdout": "while true; do find out -name \"*.html\" | wc -l | xargs printf \"\r%s\"; sleep 3; done",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "website-scraper": "^4.0.0"
+  }
+}
