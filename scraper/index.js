@@ -43,10 +43,9 @@ function inlineStylesInPage(page) {
 
 function getPageOpener({
     browser,
-    maxPages = 3
+    maxPages = 5
 } = {}) {
     const semaphore = new Semaphore(maxPages);
-
     return {
         open: async () => {
             const release = await semaphore.acquire();
@@ -82,22 +81,21 @@ function generateFilename(link) {
     return sanitizeFilepath(`${filePath}/index.html`);
 }
 
-function saveHTMLToDisk(link, content) {
-    try {
+function saveHTMLToDisk(link, outputDirectory, content) {
+    return new Promise((resolve, reject) => {
         const filename = generateFilename(link);
-        fs.outputFile(`out/${filename}`, content, err => {
+        fs.outputFile(`${outputDirectory}/${filename}`, content, err => {
             if (err) {
-                console.error("Could not save file to disk", err);
+                reject(err);
             }
 
-            console.log(`Saved ${filename}`);
+            resolve();
         });
-    } catch (e) {
-        console.error("Could not save file to disk", e);
-    }
+    })
 }
 
 async function getScraper({
+    outputDirectory = "out/",
     recursionDepth = 1,
     maxPages = 3
 } = {}) {
@@ -115,11 +113,11 @@ async function getScraper({
             return;
         }
 
-        console.log(`Queued ${url}`);
+        console.log(`${url}: Queued`);
         try {
             const page = await pageOpener.open();
             await page.goto(url);
-            console.log(`Opened page for ${url}`);
+            console.log(`${url}: Opened page`);
 
             const links = await getLinksInPage(page);
             links.forEach(link => {
@@ -131,10 +129,14 @@ async function getScraper({
             });
 
             await inlineStylesInPage(page);
-            console.log(`Inlined styles in ${url}`);
+            console.log(`${url}: Inlined styles`);
+
             const content = await page.content();
-            console.log(`Extracted content from ${url}`);
-            saveHTMLToDisk(url, content);
+            console.log(`${url}: Extracted content`);
+
+            await saveHTMLToDisk(url, outputDirectory, content);
+            console.log(`${url}: Saved`);
+
             await pageOpener.close(page);
         } catch (err) {
             console.error(err);
@@ -143,10 +145,13 @@ async function getScraper({
     }
 
     return function scraper(urls) {
-        urls.forEach(scrape, 0);
+        urls.forEach(scrape);
     }
 }
 
-getScraper().then(scraper => {
+getScraper({
+    outputDirectory: "out/",
+    recursionDepth: 0
+}).then(scraper => {
     scraper(["https://zeplin.io"]);
 });
