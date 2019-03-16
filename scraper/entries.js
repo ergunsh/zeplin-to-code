@@ -1,4 +1,5 @@
 module.exports = [
-    "https://tr.pinterest.com/search/pins/?q=try&rs=typed&term_meta[]=try%7Ctyped",
+    "https://www.reddit.com/r/SideProject/",
+    "https://www.google.com/search?q=zeplin",
     "https://zeplin.io"
 ]

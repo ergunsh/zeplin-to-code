@@ -3,7 +3,8 @@ const { Semaphore } = require("await-semaphore");
 const fs = require("fs-extra");
 const url = require("url");
 const path = require("path");
-const urls = require("./entries").filter((value, index, self) => self.indexOf(value) == index);
+const entries = require("./entries");
+
 function inlineStyle(element, options = {}) {
     if (!element) {
         throw new Error("No element specified.");
@@ -43,7 +44,7 @@ function inlineStylesInPage(page) {
 
 function getPageOpener({
     browser,
-    maxPages = 5
+    maxPages
 } = {}) {
     const semaphore = new Semaphore(maxPages);
     return {
@@ -97,7 +98,7 @@ function saveHTMLToDisk(link, outputDirectory, content) {
 async function getScraper({
     outputDirectory = "out/",
     recursionDepth = 1,
-    maxPages = 3
+    maxPages
 } = {}) {
     const browser = await puppeteer.launch();
     const pageOpener = getPageOpener({
@@ -105,17 +106,19 @@ async function getScraper({
         maxPages
     });
     const queuedPages = new Map();
+    let numberOfOperations = 0;
     async function scrape(url, currentDepth = 0) {
         queuedPages.set(url, true);
 
         if (currentDepth > recursionDepth) {
-            // console.log(`Bailing out before scraping ${url} because it is too deep at ${currentDepth}`)
+            console.log(`${url}: Bailed out at ${currentDepth}`);
             return;
         }
 
-        console.log(`${url}: Queued`);
+        console.log(`${url}: Queued depth: ${currentDepth}`);
         try {
             const page = await pageOpener.open();
+            numberOfOperations++;
             await page.goto(url);
             console.log(`${url}: Opened page`);
 
@@ -136,11 +139,16 @@ async function getScraper({
 
             await saveHTMLToDisk(url, outputDirectory, content);
             console.log(`${url}: Saved`);
-
+            numberOfOperations--;
             await pageOpener.close(page);
         } catch (err) {
             console.error(err);
+            numberOfOperations++;
             await pageOpener.close(page);
+        }
+
+        if (!numberOfOperations) {
+            browser.close();
         }
     }
 
@@ -151,7 +159,8 @@ async function getScraper({
 
 getScraper({
     outputDirectory: "out/",
-    recursionDepth: 0
+    recursionDepth: 5,
+    maxPages: 10
 }).then(scraper => {
-    scraper(["https://zeplin.io"]);
+    scraper(entries);
 });
