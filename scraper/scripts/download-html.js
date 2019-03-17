@@ -1,9 +1,9 @@
 const puppeteer = require("puppeteer");
-const { Semaphore } = require("await-semaphore");
 const fs = require("fs-extra");
 const url = require("url");
 const path = require("path");
 const entries = require("./entries");
+const getPageOpener = require("../utils/pageOpener");
 
 function inlineStyle(element, options = {}) {
     if (!element) {
@@ -40,25 +40,6 @@ function inlineStylesInPage(page) {
             recursive: true
         });
     }, inlineStyle.toString());
-}
-
-function getPageOpener({
-    browser,
-    maxPages
-} = {}) {
-    const semaphore = new Semaphore(maxPages);
-    return {
-        open: async () => {
-            const release = await semaphore.acquire();
-            const page = await browser.newPage();
-            page.release = release;
-            return page;
-        },
-        close: async page => {
-            await page.close();
-            page.release();
-        }
-    }
 }
 
 function sanitizeFilepath (filePath) {
