@@ -4,9 +4,15 @@ const find = require("find");
 const path = require("path");
 const chalk = require('chalk');
 const { Semaphore } = require("await-semaphore");
+const waitUntil = require("async-wait-until");
 
 const outputDirectory = "dataset/";
 const filesLocation = "/Users/ergunerdogmus/Desktop/outbiggoogle";
+
+let browserReady = false;
+function isBrowserReady() {
+    return browserReady;
+}
 
 function findFile(file, location) {
     return new Promise(resolve => {
@@ -28,21 +34,24 @@ function getRectsAndMarkupInPage(div) {
     return { rects: getRectangles(div), markup: div.innerHTML };
 }
 
+let numberOfSaved = 0;
 function saveDatasetToDisk(filepath, content) {
     return new Promise((resolve, reject) => {
         fs.outputFile(filepath, content, err => {
             if (err) {
                 reject(err);
             }
-            console.log(chalk.green("SAVED"), filepath);
+            console.log(chalk.green("SAVED"), filepath, chalk.blue.bold(++numberOfSaved));
             resolve();
         });
     })
 }
 
-async function generateDataset(browser, outputFilename, htmlContent) {
+let browser;
+function generateDataset(outputFilename, htmlContent) {
     let openedPage;
-    return browser.newPage()
+    return waitUntil(isBrowserReady)
+        .then(() => browser.newPage())
         .then(page => {
             openedPage = page;
             console.log(chalk.blue("OPENED"), outputFilename);
@@ -51,7 +60,8 @@ async function generateDataset(browser, outputFilename, htmlContent) {
         .then(() => {
             return openedPage.evaluate(fnText => {
                 const getRectsAndMarkup = new Function(`return (${fnText}).apply(null, arguments)`);
-                const divs = document.querySelectorAll("div");
+                const tags = "div,section,article,nav,header,footer";
+                const divs = document.querySelectorAll(tags);
                 const outputs = [];
                 for (let div of divs) {
                     outputs.push(getRectsAndMarkup(div));
@@ -66,11 +76,13 @@ async function generateDataset(browser, outputFilename, htmlContent) {
         })
         .catch(err => {
             console.error("error in generateDateset", err);
-            openedPage.close();
+            if (openedPage) {
+                openedPage.close();
+            }
         });
 }
 
-function createDataFromFile(browser, fileReaderSemaphore, file) {
+function createDataFromFile(fileReaderSemaphore, file) {
     let releaseInBlock;
     const outputFilename = path.join(outputDirectory, file.replace(".html", ".json").replace(filesLocation, ""));
 
@@ -80,7 +92,7 @@ function createDataFromFile(browser, fileReaderSemaphore, file) {
             releaseInBlock = release;
             return fs.readFile(file, { encoding: "utf8" });
         })
-        .then(htmlContent => generateDataset(browser, outputFilename, htmlContent))
+        .then(htmlContent => generateDataset(outputFilename, htmlContent))
         .then(() => {
             console.log(chalk.magenta("RELEASED"), outputFilename);
             releaseInBlock();
@@ -88,25 +100,38 @@ function createDataFromFile(browser, fileReaderSemaphore, file) {
         .catch(err => {
             console.error(err);
             console.log(chalk.magenta("RELEASED"), outputFilename);
+            if (!browser) {
+                startBrowser();
+            }
             return releaseInBlock();
         });
 }
 
+function startBrowser() {
+    if (browser) {
+        browser.close();
+    }
+
+    return puppeteer.launch().then(newBrowser => {
+        browser = newBrowser;
+        browserReady = true;
+        browser.on("disconnected", () => {
+            browserReady = false;
+            startBrowser();
+        })
+    });
+}
+
 function getHTMLs() {
     const fileReaderSemaphore = new Semaphore(10);
-    let openedBrowser;
-    Promise.all([puppeteer.launch(), findFile(/.*\.html/, filesLocation)])
-        .then(([browser, files]) => {
-            openedBrowser = browser;
-            return Promise.all(files.map(file => createDataFromFile(browser, fileReaderSemaphore, file)));
-        })
-        .then(() => {
-            openedBrowser.close
-        })
+    startBrowser()
+        .then(() => findFile(/.*\.html/, filesLocation))
+        .then(files => Promise.all(files.map(file => createDataFromFile(fileReaderSemaphore, file))))
+        .then(() => browser.close())
         .catch(err => {
             console.error("Error in getHTMLs", err);
-            return openedBrowser.close();
-        })
+            return browser.close();
+        });
 }
 
 getHTMLs();
