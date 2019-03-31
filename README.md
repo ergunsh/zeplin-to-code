@@ -33,5 +33,6 @@ With the help of these definitions; we can rephrase our aim as to translate a de
 * [Airbnb - Sketching interfaces](https://airbnb.design/sketching-interfaces/) — Creating code from low fidelity wireframes
 * [Microsoft - Sketch2Code](https://sketch2code.azurewebsites.net/) — Transform any hands-drawn design into a HTML code with AI
 * [Floydhub - Turning Design Mockups Into Code With Deep Learning](https://blog.floydhub.com/turning-design-mockups-into-code-with-deep-learning/) — Turning design mockups into code with deep learning
+* [pix2code](https://github.com/tonybeltramelli/pix2code) – Generating Code from a Graphical User Interface Screenshot
 
 These studies worked on generating UI code from drawing images. So, they tried to solve two problems: firstly, they tried to convert drawing images into meaningful data structures; secondly, they tried to generate code from generated data structures. Since we have meaningful data structures representing the UI we only are interested in the second part of the problem.
