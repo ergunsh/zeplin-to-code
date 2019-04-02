@@ -80,5 +80,7 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 out/
+out-with-body-rect/
+out-with-position/
 nohup.out
 dataset/

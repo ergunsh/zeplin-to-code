@@ -2,7 +2,7 @@ const find = require("find");
 const fs = require("fs-extra");
 const { Semaphore } = require("await-semaphore");
 const chalk = require("chalk");
-const examplesDir = "dataset/";
+const examplesDir = "./scraper/dataset/";
 
 const semaphore = new Semaphore(100);
 let count = 0;
