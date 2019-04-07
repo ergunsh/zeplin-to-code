@@ -1,6 +1,7 @@
 import numpy as np
 import keras
 import json
+import utils
 from os import listdir, path
 
 def convert_x_dict_to_list(x_dict, viewport):
@@ -11,14 +12,17 @@ def convert_x_dict_to_list(x_dict, viewport):
         float(x_dict["height"]) / viewport["height"]
     ]
 
+def advance_token(y):
+    pass
+
+def convert_y_to_word_vectors(y):
+    return y
+
 def generate_data_for_file(file_path):
     with open(file_path) as json_file:
         data = json.load(json_file)
         x_list = map(lambda rect: convert_x_dict_to_list(rect, data["viewport"]), data["x"])
-        y = data["y"]
-        print(file_path)
-        print(x_list)
-        print(y)
+        y = convert_y_to_word_vectors(data["y"])
         return x_list, y
 
 class DatasetGenerator(keras.utils.Sequence):
