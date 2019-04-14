@@ -2,6 +2,7 @@ module.exports = {
     BLOCK: ".block",
     INLINE: ".inline",
     INLINE_BLOCK: ".inline-block",
+    TABLE: ".table",
     FLEX: ".flex",
     ROW: ".row",
     COLUMN: ".column",
@@ -18,7 +19,11 @@ module.exports = {
     AI_CENTER: ".ai-center",
     AI_STRETCH: ".ai-stretch",
     AI_BASELINE: ".ai-baseline",
-    LEFT_BRACKET: "{",
-    RIGHT_BRACKET: "}",
-    SIBLING_SEP: "|"
+    STATIC: ".static",
+    RELATIVE: ".relative",
+    ABSOLUTE: ".absolute",
+    STICKY: ".sticky",
+    LEFT_BRACKET: ".{",
+    RIGHT_BRACKET: ".}",
+    SIBLING_SEP: ".|"
 }

@@ -6,14 +6,14 @@ const mapping = {
         flex: tokens.FLEX,
         inline: tokens.INLINE,
         "inline-block": tokens.INLINE_BLOCK,
-        table: "table",
+        table: tokens.TABLE,
     },
     position: {
-        static: ".static",
-        relative: ".relative",
-        fixed: ".absolute",
-        absolute: ".absolute",
-        sticky: ".sticky"
+        static: tokens.STATIC,
+        relative: tokens.RELATIVE,
+        fixed: tokens.FIXED,
+        absolute: tokens.ABSOLUTE,
+        sticky: tokens.STICKY
     },
     "flex-direction": {
         row: tokens.ROW,
