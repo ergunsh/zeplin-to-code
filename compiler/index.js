@@ -23,9 +23,9 @@ function getDSL(tokens, mapping, parent) {
         dsl += (mapping[propertyName] && mapping[propertyName][value]) || "";
     }
 
-    const childrenDSL = Array.prototype.map.call(parent.children, child => getDSL(tokens, mapping, child)).join("|");
+    const childrenDSL = Array.prototype.map.call(parent.children, child => getDSL(tokens, mapping, child)).join(tokens.SIBLING_SEP);
     if (childrenDSL) {
-        dsl += `{${childrenDSL}}`;
+        dsl += `${tokens.LEFT_BRACKET}${childrenDSL}${tokens.RIGHT_BRACKET}`;
     }
 
     return dsl;

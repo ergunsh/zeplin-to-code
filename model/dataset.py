@@ -12,11 +12,10 @@ def convert_x_dict_to_list(x_dict, viewport):
         float(x_dict["height"]) / viewport["height"]
     ]
 
-def advance_token(y):
-    pass
-
 def convert_y_to_word_vectors(y):
-    return y
+    tokensSplit = y.split(".")
+    vectors = map(lambda tokenWithoutDot: utils.convert_word_to_vector("." + tokenWithoutDot), tokensSplit[1:])
+    return vectors
 
 def generate_data_for_file(file_path):
     with open(file_path) as json_file:
@@ -37,11 +36,10 @@ class DatasetGenerator(keras.utils.Sequence):
 
     def __getitem__(self, index):
         files = self.data_files[index * self.batch_size: (index + 1) * self.batch_size]
-        X, y = self.__generate_data(files)
+        return self.__generate_data(files)
 
     def __generate_data(self, files):
-        x, y = generate_data_for_file(path.join(self.dir_path, files[0]))
-        return "a", "b"
+        return generate_data_for_file(path.join(self.dir_path, files[0]))
 
-generator = DatasetGenerator(dir_path="../compiler/out")
+generator = DatasetGenerator(dir_path="../compiler/out-with-position")
 print(generator.__getitem__(0))
