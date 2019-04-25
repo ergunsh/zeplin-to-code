@@ -85,3 +85,5 @@ out-with-position/
 nohup.out
 dataset/
 .vscode
+s2s.initial
+sample-data/
