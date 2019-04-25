@@ -17,30 +17,29 @@ def convert_y_to_word_vectors(y):
     vectors = map(lambda tokenWithoutDot: utils.convert_word_to_vector("." + tokenWithoutDot), tokensSplit[1:])
     return vectors
 
-def generate_data_for_file(file_path, max_len):
+def generate_data_for_file(file_path):
+    Xs = []
+    decoderXs = []
+    Ys = []
     with open(file_path) as json_file:
         data = json.load(json_file)
         list_x = np.array(map(lambda rect: convert_x_dict_to_list(rect, data["viewport"]), data["x"]))
-        padded_x = keras.preprocessing.sequence.pad_sequences(data["x"], maxlen=max_len, dtype=object, value=np.zeros(4))
-        y = convert_y_to_word_vectors(data["y"]).append(utils.convert_word_to_vector(".stop"))
-        return padded_x, y
-
-def get_max_length_input(data_files, dir_path):
-    max_len = 0
-    for data_file in data_files:
-        with open(path.join(dir_path, data_file)) as json_file:
-            data = json.load(json_file)
-            x_len = len(data["x"])
-            if x_len > max_len:
-                max_len = x_len
-    return max_len
+        y = convert_y_to_word_vectors(data["y"])
+        y.insert(0, utils.convert_word_to_vector(".start"))
+        decoderX = []
+        decoderY = []
+        for t, word_vector in enumerate(y):
+            decoderX.append(word_vector)
+            if t > 0:
+                decoderY.append(word_vector)
+        decoderY.append(utils.convert_word_to_vector(".stop"))
+        return list_x, decoderX, decoderY
 
 class DatasetGenerator(keras.utils.Sequence):
     def __init__(self, dir_path, batch_size=32):
         self.batch_size = batch_size
         self.dir_path = dir_path
         self.data_files = listdir(dir_path)
-        self.max_len = get_max_length_input(self.data_files, dir_path)
 
     def __len__(self):
         "Denotes the number of batches per epoch"
@@ -48,7 +47,16 @@ class DatasetGenerator(keras.utils.Sequence):
 
     def __getitem__(self, index):
         files = self.data_files[index * self.batch_size: (index + 1) * self.batch_size]
-        return self.__generate_data(files)
+        X, decoderX, y = self.__generate_data(files)
+        return [X, decoderX], y
 
     def __generate_data(self, files):
-        return map(lambda file_name: generate_data_for_file(path.join(self.dir_path, file_name), self.max_len), files)
+        Xs = []
+        decoderXs = []
+        ys = []
+        for file_name in files:
+            X, decoderX, y = generate_data_for_file(path.join(self.dir_path, file_name))
+            Xs.append(X)
+            decoderXs.append(decoderX)
+            ys.append(y)
+        return np.array(Xs), np.array(decoderXs), np.array(ys)
