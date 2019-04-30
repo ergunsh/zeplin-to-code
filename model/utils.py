@@ -15,6 +15,9 @@ def convert_word_to_vector(word):
     vec[index] = 1
     return vec
 
+def convert_index_to_word(index):
+    return words[index]
+
 def convert_vector_to_word(vec):
     return words[np.nonzero(vec)[0][0]]
 
