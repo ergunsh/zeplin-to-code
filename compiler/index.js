@@ -106,8 +106,10 @@ async function getDecompiler({
     }
 }
 
-getDecompiler({
-    maxPages: 20
-}).then(decompile => {
-    decompile();
-})
+if (process.argv[2] === "--decompie") {
+    getDecompiler({
+        maxPages: 20
+    }).then(decompile => {
+        decompile();
+    })
+}
