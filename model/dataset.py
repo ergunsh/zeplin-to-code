@@ -5,6 +5,9 @@ import utils
 from os import listdir, path
 
 def convert_x_dict_to_list(x_dict, viewport):
+    viewport["width"] = viewport["width"] if viewport["width"] != 0 else 1
+    viewport["height"] = viewport["height"] if viewport["height"] != 0 else 1
+
     return np.array([
         float(x_dict["x"]) / viewport["width"],
         float(x_dict["y"]) / viewport["height"],

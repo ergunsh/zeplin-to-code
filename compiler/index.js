@@ -44,7 +44,7 @@ function generateDSLFromPage(page) {
 }
 
 async function getDecompiler({
-    outputDirectory = "out-with-position/",
+    outputDirectory = "out-new/",
     maxPages
 } = {}) {
     const browser = await puppeteer.launch();
@@ -107,7 +107,7 @@ async function getDecompiler({
 }
 
 getDecompiler({
-    maxPages: 50
+    maxPages: 20
 }).then(decompile => {
     decompile();
 })

@@ -82,8 +82,12 @@ typings/
 out/
 out-with-body-rect/
 out-with-position/
+out-new/
+out-new-0/
+env/
 nohup.out
 dataset/
 .vscode
 s2s.initial
 sample-data/
+dist/

@@ -4,12 +4,12 @@ import utils
 from keras import models, layers
 from dataset import DatasetGenerator
 
-data_generator = DatasetGenerator(dir_path="../compiler/out-with-position", batch_size=1)
+data_generator = DatasetGenerator(dir_path="../compiler/out-new", batch_size=1)
 latent_dim = 128
 max_decoder_seq_length = 100000
 
 number_of_words = utils.get_number_of_words()
-model = models.load_model("s2s.initial")
+model = models.load_model("s2s.second")
 
 encoder_inputs = model.input[0]   # input_1
 encoder_outputs, state_h_enc, state_c_enc = model.layers[2].output   # lstm_1
