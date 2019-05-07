@@ -4,7 +4,7 @@ import utils
 from keras import models, layers
 from dataset import DatasetGenerator
 
-data_generator = DatasetGenerator(dir_path="../compiler/out-new", batch_size=1)
+data_generator = DatasetGenerator(dir_path="../compiler/flex-examples", batch_size=1)
 number_of_words = utils.get_number_of_words()
 latent_dim = 128
 
@@ -38,5 +38,5 @@ model = models.Model([encoder_inputs, decoder_inputs], decoder_outputs)
 model.compile(optimizer="rmsprop", loss="categorical_crossentropy")
 model.summary()
 history = model.fit_generator(generator=data_generator)
-model.save("s2s.second")
+model.save("s2s.flex")
 print(history)
