@@ -85,6 +85,7 @@ out-with-position/
 out-new/
 out-new-0/
 out-new-1/
+out-validation/
 flex-examples/
 env/
 nohup.out
@@ -93,3 +94,4 @@ dataset/
 s2s.initial
 sample-data/
 dist/
+weights/

@@ -1,10 +1,29 @@
 import numpy as np
 import utils
+import json
+import os
+import tensorflow as tf
 
-from keras import models, layers
+from keras import models, layers, metrics, callbacks, backend
 from dataset import DatasetGenerator
 
-data_generator = DatasetGenerator(dir_path="../compiler/flex-examples", batch_size=1)
+
+config = tf.ConfigProto(intra_op_parallelism_threads=6,
+    inter_op_parallelism_threads=2,
+    allow_soft_placement=True,
+    device_count = {'CPU': 6 })
+
+session = tf.Session(config=config)
+backend.set_session(session)
+
+os.environ["OMP_NUM_THREADS"] = "6"
+os.environ["KMP_BLOCKTIME"] = "30"
+os.environ["KMP_SETTINGS"] = "1"
+os.environ["KMP_AFFINITY"]= "granularity=fine,verbose,compact,1,0"
+
+data_generator = DatasetGenerator(dir_path="../compiler/out-new", batch_size=1)
+validation_generator = DatasetGenerator(dir_path="../compiler/out-validation", batch_size=1)
+
 number_of_words = utils.get_number_of_words()
 latent_dim = 128
 
@@ -34,9 +53,19 @@ decoder_outputs = decoder_dense(decoder_outputs)
 # `encoder_input_data` & `decoder_input_data` into `decoder_target_data`
 model = models.Model([encoder_inputs, decoder_inputs], decoder_outputs)
 
+weigth_file="./weights/weights-improvement-{epoch:02d}-{categorical_accuracy:.4f}.hdf5"
+checkpoint_callback = callbacks.ModelCheckpoint(weigth_file, monitor='categorical_accuracy', verbose=1, save_best_only=True, mode='max')
+
 # Run training
-model.compile(optimizer="rmsprop", loss="categorical_crossentropy")
+model.compile(optimizer="rmsprop",
+    loss="categorical_crossentropy",
+    metrics=["categorical_accuracy"])
 model.summary()
-history = model.fit_generator(generator=data_generator)
-model.save("s2s.flex")
-print(history)
+history = model.fit_generator(generator=data_generator,
+    epochs=5,
+    use_multiprocessing=True,
+    callbacks=[checkpoint_callback],
+    validation_data=validation_generator)
+model.save("s2s.7052019")
+with open("history.json", "w+") as f:
+    json.dump(history.history, f)
