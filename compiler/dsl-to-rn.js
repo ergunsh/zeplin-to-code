@@ -1,4 +1,6 @@
-const prettier = require("prettier");
+const prettier = require("prettier/standalone");
+const plugins = [require("prettier/parser-babylon")];
+
 const styleValueMapping = require("./style-value-mapping");
 const tokens = require("./tokens");
 const example = `.{.block.static.row.nowrap.|.block.static.row.nowrap.{.block.static.row.nowrap.}.}`;
@@ -20,14 +22,22 @@ function getRuleFromToken(token) {
     }
 }
 
-function convertTokenToStyle(token) {
+function convertTokenToStyle(token, isBlock) {
     const { property, value } = getRuleFromToken(token);
     return `"${property}": "${value}"`;
 }
 
 function generateView(tokens, hasChildren) {
-    const styleAttribute = tokens.length ? ` style={{ ${tokens.map(token => convertTokenToStyle(token)).join(", ")} }}` : "";
-    return `<View${styleAttribute}${hasChildren ? "" : "/"}>`;
+    const isBlock = tokens.includes(".block");
+    let tokensInConsideration = tokens;
+    if (isBlock) {
+        tokensInConsideration = tokens.filter(token => {
+            const { property } = getRuleFromToken(token);
+            return !property.includes("flex");
+        });
+    }
+    const styleAttribute = tokens.length ? ` style={{ ${tokensInConsideration.map(token => convertTokenToStyle(token)).join(", ")} }}` : "";
+    return `<div${styleAttribute}${hasChildren ? "" : "/"}>`;
 }
 
 function generateCodeFromParseTree(node) {
@@ -35,7 +45,7 @@ function generateCodeFromParseTree(node) {
         return generateView(node.styleTokens);
     }
 
-    return `${generateView(node.styleTokens, true)}${node.children.map(generateCodeFromParseTree).join("")}</View>`;
+    return `${generateView(node.styleTokens, true)}${node.children.map(generateCodeFromParseTree).join("")}</div>`;
 }
 
 class Node {
@@ -66,6 +76,8 @@ function getParseTree(text) {
                 break;
             case tokens.SIBLING_SEP:
                 siblingSep(token);
+                break;
+            case tokens.STOP:
                 break;
             default:
                 styleToken(token);
@@ -105,6 +117,8 @@ function getParseTree(text) {
     return root;
 }
 
-const root = getParseTree(example);
-const code = generateCodeFromParseTree(root);
-console.log(prettier.format(code, { parser: "babel" }));
+module.exports = dslCode => {
+    const root = getParseTree(dslCode);
+    const code = generateCodeFromParseTree(root);
+    return prettier.format(code, { parser: "babel", plugins });
+};

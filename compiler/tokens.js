@@ -25,5 +25,6 @@ module.exports = {
     STICKY: ".sticky",
     LEFT_BRACKET: ".{",
     RIGHT_BRACKET: ".}",
-    SIBLING_SEP: ".|"
+    SIBLING_SEP: ".|",
+    STOP: ".stop"
 }
