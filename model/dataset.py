@@ -38,6 +38,9 @@ def generate_data_for_file(file_path):
         decoderY.append(utils.convert_word_to_vector(".stop"))
         return list_x, decoderX, decoderY
 
+def preprocessX(X):
+    return sorted(X, key=lambda el: (el[1], el[0]), reverse=True)
+
 class DatasetGenerator(keras.utils.Sequence):
     def __init__(self, dir_path, batch_size=32):
         self.batch_size = batch_size
@@ -59,6 +62,7 @@ class DatasetGenerator(keras.utils.Sequence):
         ys = []
         for file_name in files:
             X, decoderX, y = generate_data_for_file(path.join(self.dir_path, file_name))
+            X = preprocessX(X)
             Xs.append(X)
             decoderXs.append(decoderX)
             ys.append(y)
