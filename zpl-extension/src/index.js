@@ -50,11 +50,12 @@ function get_sampler({
 }
 
 function collect_rects(layers) {
-    const rects = [];
+    let rects = [];
     for (let layer of layers) {
         rects.push(layer.rect);
-        if (layer.children && layer.children.length) {
-            rects.push(collect_rects(layer.children));
+        if (layer.layers && layer.layers.length) {
+            const childRects = collect_rects(layer.layers);
+            rects = rects.concat(childRects);
         }
     }
     return rects;
@@ -71,7 +72,11 @@ function get_input_from_rect(rect, imageWidth, imageHeight) {
 
 function get_input_arr_from_version(version) {
     const { image: { width, height }, layers } = version;
-    const rects = collect_rects(layers).sort((r1, r2) => r1.y - r2.y).slice(1);
+    const rects = collect_rects(layers).sort((r1, r2) => {
+        const yDiff = r1.y - r2.y
+        const xDiff = r1.x - r2.x;
+        return yDiff !== 0 ? yDiff : xDiff;
+    });
     const input = rects.map(rect => get_input_from_rect(rect, width, height));
     console.log("input", input);
     return [input];
