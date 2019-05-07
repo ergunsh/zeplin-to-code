@@ -28,14 +28,19 @@ function convertTokenToStyle(token, isBlock) {
 }
 
 function generateView(tokens, hasChildren) {
-    const isBlock = tokens.includes(".block");
-    let tokensInConsideration = tokens;
-    if (isBlock) {
-        tokensInConsideration = tokens.filter(token => {
-            const { property } = getRuleFromToken(token);
-            return !property.includes("flex");
-        });
-    }
+    const isFlex = tokens.includes(".flex");
+    let tokensInConsideration = tokens.filter(token => {
+        if (token === ".static") {
+            return false; // Default
+        }
+
+        if (isFlex) {
+            return true;
+        }
+
+        const { property } = getRuleFromToken(token);
+        return !property.includes("flex"); // If not flex; do not print flex properties
+    });
     const styleAttribute = tokens.length ? ` style={{ ${tokensInConsideration.map(token => convertTokenToStyle(token)).join(", ")} }}` : "";
     return `<div${styleAttribute}${hasChildren ? "" : "/"}>`;
 }
