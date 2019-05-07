@@ -1,49 +1,80 @@
 import * as tf from "@tensorflow/tfjs";
 import * as utils from "./utils";
+import dslToRN from "../../compiler/dsl-to-rn";
 
 const max_decoder_seq_length = 10000;
+let sampleFn;
 tf.loadLayersModel("http://localhost:7070/js-model/model.json").then(model => {
     const { encoder_model, decoder_model } = assemblyModel(model);
-    const input_arr = [[[0, 0, 1, 1], [0, 0, 0.5, 0.5]]];
-    const input_seq = tf.tensor(input_arr);
-    sample(input_seq, {
+    sampleFn = get_sampler({
         encoder_model,
         decoder_model
     });
 });
 
-function sample(input_seq, {
+function get_sampler({
     encoder_model,
     decoder_model
 }) {
-    let states_value = encoder_model.predict(input_seq);
-    const target_seq_arr = [[utils.convert_word_to_vector(".start")]]
-    let target_seq = tf.tensor3d(target_seq_arr);
+    return function sample_from_sampler(input_seq_arr) {
+        let input_seq = tf.tensor(input_seq_arr);
+        let states_value = encoder_model.predict(input_seq);
+        const target_seq_arr = [[utils.convert_word_to_vector(".start")]]
+        let target_seq = tf.tensor3d(target_seq_arr);
 
-    let stop_condition = false;
-    let decoded_sentence = "";
-    while (!stop_condition) {
-        const decoder_input = [target_seq, ...states_value];
-        const [output_tokens, h, c] = decoder_model.predict(decoder_input)
+        let stop_condition = false;
+        let decoded_sentence = "";
+        while (!stop_condition) {
+            const decoder_input = [target_seq, ...states_value];
+            const [output_tokens, h, c] = decoder_model.predict(decoder_input)
 
-        const output_tokens_arr = output_tokens.arraySync();
-        const last_token_arr = output_tokens_arr[0][output_tokens_arr.length - 1];
+            const output_tokens_arr = output_tokens.arraySync();
+            const last_token_arr = output_tokens_arr[0][output_tokens_arr.length - 1];
 
-        const sampled_token_index = utils.arg_index_max(last_token_arr);
-        const sampled_token = utils.convert_index_to_word(sampled_token_index)
-        decoded_sentence += sampled_token
+            const sampled_token_index = utils.arg_index_max(last_token_arr);
+            const sampled_token = utils.convert_index_to_word(sampled_token_index)
+            decoded_sentence += sampled_token
 
-        if (sampled_token == '.stop' || decoded_sentence.length > max_decoder_seq_length) {
-            stop_condition = true;
+            if (sampled_token == '.stop' || decoded_sentence.length > max_decoder_seq_length) {
+                stop_condition = true;
+            }
+
+            const target_arr = target_seq.arraySync();
+            target_arr[0][0] = utils.convert_word_to_vector(sampled_token);
+            target_seq = tf.tensor3d(target_arr);
+            states_value = [h, c];
         }
-        console.log("sampled_token", sampled_token);
-        const target_arr = target_seq.arraySync();
-        target_arr[0][0] = utils.convert_word_to_vector(sampled_token);
-        target_seq = tf.tensor3d(target_arr);
-        states_value = [h, c];
-    }
 
-    return decoded_sentence
+        return decoded_sentence
+    }
+}
+
+function collect_rects(layers) {
+    const rects = [];
+    for (let layer of layers) {
+        rects.push(layer.rect);
+        if (layer.children && layer.children.length) {
+            rects.push(collect_rects(layer.children));
+        }
+    }
+    return rects;
+}
+
+function get_input_from_rect(rect, imageWidth, imageHeight) {
+    return [
+        rect.x / imageWidth,
+        rect.y / imageHeight,
+        rect.width / imageWidth,
+        rect.height / imageHeight
+    ];
+}
+
+function get_input_arr_from_version(version) {
+    const { image: { width, height }, layers } = version;
+    const rects = collect_rects(layers).sort((r1, r2) => r1.y - r2.y).slice(1);
+    const input = rects.map(rect => get_input_from_rect(rect, width, height));
+    console.log("input", input);
+    return [input];
 }
 
 function assemblyModel(model) {
@@ -83,7 +114,22 @@ function assemblyModel(model) {
 
 function layer(context, selectedLayer) {}
 
-function screen(context, selectedVersion, selectedScreen) {}
+function screen(context, selectedVersion, selectedScreen) {
+    if (!sampleFn) {
+        return {
+            code: `{ "error": "Model is not initialized yet" }`,
+            language: "json"
+        };
+    }
+
+    const input_arr_from_version = get_input_arr_from_version(selectedVersion);
+    const decoded_sentence = sampleFn(input_arr_from_version);
+    console.log("decoded_sentence", decoded_sentence);
+    return {
+        code: dslToRN(decoded_sentence),
+        language: "jsx"
+    };
+}
 
 function component(context, selectedVersion, selectedComponent) {}
 
