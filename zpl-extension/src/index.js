@@ -3,6 +3,7 @@ import * as utils from "./utils";
 import dslToRN from "../../compiler/dsl-to-rn";
 
 const max_decoder_seq_length = 10000;
+const depth = 2;
 let sampleFn;
 tf.loadLayersModel("http://localhost:7070/best-of-three-model/model.json").then(model => {
     const { encoder_model, decoder_model } = assemblyModel(model);
@@ -49,12 +50,16 @@ function get_sampler({
     }
 }
 
-function collect_rects(layers) {
+function collect_rects(layers, currentDepth = 0) {
     let rects = [];
+    if (depth <= currentDepth) {
+        return [];
+    }
+
     for (let layer of layers) {
         rects.push(layer.rect);
         if (layer.layers && layer.layers.length) {
-            const childRects = collect_rects(layer.layers);
+            const childRects = collect_rects(layer.layers, currentDepth + 1);
             rects = rects.concat(childRects);
         }
     }
@@ -77,6 +82,7 @@ function get_input_arr_from_version(version) {
         const xDiff = r1.x - r2.x;
         return yDiff !== 0 ? yDiff : xDiff;
     });
+    console.log("rects", rects);
     const input = rects.map(rect => get_input_from_rect(rect, width, height));
     console.log("input", input);
     return [input];
@@ -136,7 +142,22 @@ function screen(context, selectedVersion, selectedScreen) {
     };
 }
 
-function component(context, selectedVersion, selectedComponent) {}
+function component(context, selectedVersion, selectedComponent) {
+    if (!sampleFn) {
+        return {
+            code: `{ "error": "Model is not initialized yet" }`,
+            language: "json"
+        };
+    }
+
+    const input_arr_from_version = get_input_arr_from_version(selectedVersion);
+    const decoded_sentence = sampleFn(input_arr_from_version);
+    console.log("decoded_sentence", decoded_sentence);
+    return {
+        code: dslToRN(decoded_sentence),
+        language: "jsx"
+    };
+}
 
 function styleguideColors(context, colors) {}
 
