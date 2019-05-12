@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 const fs = require("fs-extra");
 const url = require("url");
 const path = require("path");
-const entries = require("./entries");
+const entries = require("./top-1m.js");
 const getPageOpener = require("../utils/pageOpener");
 
 function inlineStyle(element, options = {}) {
@@ -78,7 +78,6 @@ function saveHTMLToDisk(link, outputDirectory, content) {
 
 async function getScraper({
     outputDirectory = "out/",
-    recursionDepth = 1,
     maxPages
 } = {}) {
     const browser = await puppeteer.launch();
@@ -86,31 +85,11 @@ async function getScraper({
         browser,
         maxPages
     });
-    const queuedPages = new Map();
-    let numberOfOperations = 0;
-    async function scrape(url, currentDepth = 0) {
-        queuedPages.set(url, true);
 
-        if (currentDepth > recursionDepth) {
-            console.log(`${url}: Bailed out at ${currentDepth}`);
-            return;
-        }
-
-        console.log(`${url}: Queued depth: ${currentDepth}`);
+    async function scrape(page, url) {
         try {
-            const page = await pageOpener.open();
-            numberOfOperations++;
             await page.goto(url);
             console.log(`${url}: Opened page`);
-
-            const links = await getLinksInPage(page);
-            links.forEach(link => {
-                if (queuedPages.has(link)) {
-                    return;
-                }
-
-                scrape(link, currentDepth + 1)
-            });
 
             await inlineStylesInPage(page);
             console.log(`${url}: Inlined styles`);
@@ -120,28 +99,24 @@ async function getScraper({
 
             await saveHTMLToDisk(url, outputDirectory, content);
             console.log(`${url}: Saved`);
-            numberOfOperations--;
             await pageOpener.close(page);
         } catch (err) {
             console.error(err);
-            numberOfOperations++;
             await pageOpener.close(page);
-        }
-
-        if (!numberOfOperations) {
-            browser.close();
         }
     }
 
-    return function scraper(urls) {
-        urls.forEach(scrape);
+    return async function scraper(urls) {
+        for (let url of urls) {
+            const page = await pageOpener.open();
+            scrape(page, url);
+        }
     }
 }
 
 getScraper({
     outputDirectory: "out/",
-    recursionDepth: 5,
     maxPages: 10
 }).then(scraper => {
-    scraper(entries);
+    scraper(entries.map(entry => `http://${entry}`));
 });

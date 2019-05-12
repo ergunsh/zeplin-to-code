@@ -6,8 +6,9 @@ const chalk = require('chalk');
 const { Semaphore } = require("await-semaphore");
 const waitUntil = require("async-wait-until");
 
-const outputDirectory = "dataset/";
-const filesLocation = "/Users/ergunerdogmus/Desktop/outbiggoogle";
+const outputDirectory = "dataset-body-2/";
+const filesLocation = "out";
+// const filesLocation = "/Users/ergunerdogmus/Desktop/outbiggoogle";
 
 let browserReady = false;
 function isBrowserReady() {
@@ -61,11 +62,11 @@ function generateDataset(outputFilename, htmlContent) {
             return openedPage.evaluate(fnText => {
                 const getRectsAndMarkup = new Function(`return (${fnText}).apply(null, arguments)`);
                 const tags = "div,section,article,nav,header,footer";
-                const divs = document.querySelectorAll(tags);
-                const outputs = [];
-                for (let div of divs) {
-                    outputs.push(getRectsAndMarkup(div));
-                }
+                // const divs = document.querySelectorAll(tags);
+                const outputs = [getRectsAndMarkup(document.body)];
+                // for (let div of divs) {
+                //     outputs.push(getRectsAndMarkup(div));
+                // }
                 const bodyRect = document.body.getBoundingClientRect().toJSON();
                 return { viewport: { width: bodyRect.width, height: bodyRect.height }, outputs };
             }, getRectsAndMarkupInPage.toString());
@@ -126,7 +127,7 @@ function getHTMLs() {
     const fileReaderSemaphore = new Semaphore(10);
     startBrowser()
         .then(() => findFile(/.*\.html/, filesLocation))
-        .then(files => Promise.all(files.map(file => createDataFromFile(fileReaderSemaphore, file))))
+        .then(files => Promise.all(files.slice(2806).map(file => createDataFromFile(fileReaderSemaphore, file))))
         .then(() => browser.close())
         .catch(err => {
             console.error("Error in getHTMLs", err);

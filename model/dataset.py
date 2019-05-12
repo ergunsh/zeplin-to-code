@@ -43,6 +43,7 @@ def preprocessX(X):
 
 class DatasetGenerator(keras.utils.Sequence):
     def __init__(self, dir_path, batch_size=32):
+        self.used_data_files = []
         self.batch_size = batch_size
         self.dir_path = dir_path
         self.data_files = listdir(dir_path)
@@ -61,6 +62,10 @@ class DatasetGenerator(keras.utils.Sequence):
         decoderXs = []
         ys = []
         for file_name in files:
+            self.used_data_files.append(file_name)
+            if len(self.used_data_files) % 100 == 0:
+                with open("open_data_files.json", "w+") as f:
+                    json.dump(self.used_data_files, f)
             X, decoderX, y = generate_data_for_file(path.join(self.dir_path, file_name))
             X = preprocessX(X)
             Xs.append(X)

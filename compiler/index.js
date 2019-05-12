@@ -7,7 +7,7 @@ const find = require("find");
 const { Semaphore } = require("await-semaphore");
 const chalk = require("chalk");
 const path = require("path");
-const datasetDir = "./scraper/dataset";
+const datasetDir = "./scraper/dataset-body";
 
 function findFile(file, location) {
     return new Promise(resolve => {
@@ -44,7 +44,7 @@ function generateDSLFromPage(page) {
 }
 
 async function getDecompiler({
-    outputDirectory = "out-new/",
+    outputDirectory = "out-websites/",
     maxPages
 } = {}) {
     const browser = await puppeteer.launch();
@@ -106,7 +106,7 @@ async function getDecompiler({
     }
 }
 
-if (process.argv[2] === "--decompie") {
+if (process.argv[2] === "--decompile") {
     getDecompiler({
         maxPages: 20
     }).then(decompile => {

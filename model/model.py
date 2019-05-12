@@ -21,7 +21,7 @@ os.environ["KMP_BLOCKTIME"] = "30"
 os.environ["KMP_SETTINGS"] = "1"
 os.environ["KMP_AFFINITY"]= "granularity=fine,verbose,compact,1,0"
 
-data_generator = DatasetGenerator(dir_path="../compiler/out-new", batch_size=1)
+data_generator = DatasetGenerator(dir_path="../compiler/out-without-text-nodes", batch_size=1)
 validation_generator = DatasetGenerator(dir_path="../compiler/out-validation", batch_size=1)
 
 number_of_words = utils.get_number_of_words()
@@ -53,9 +53,20 @@ decoder_outputs = decoder_dense(decoder_outputs)
 # `encoder_input_data` & `decoder_input_data` into `decoder_target_data`
 model = models.Model([encoder_inputs, decoder_inputs], decoder_outputs)
 
-weigth_file="./weights/weights-improvement-{epoch:02d}-{categorical_accuracy:.4f}.hdf5"
+weigth_file="./weights/weights-improvement-long-{epoch:02d}-{categorical_accuracy:.4f}.hdf5"
 checkpoint_callback = callbacks.ModelCheckpoint(weigth_file, monitor='categorical_accuracy', verbose=1, save_best_only=True, mode='max')
 
+class CustomCheckpoint(callbacks.Callback):
+    def __init__(self):
+        self.current_batch_number = 0
+
+    def on_batch_end(self, batch, logs=None):
+        self.current_batch_number = self.current_batch_number + 1
+        if self.current_batch_number % 100 == 0: # Save at every 100 data
+            save_path = "./weights/last-model-" + str(self.current_batch_number) + ".hdf5"
+            self.model.save(save_path)
+
+custom_checkpoint = CustomCheckpoint()
 # Run training
 model.compile(optimizer="rmsprop",
     loss="categorical_crossentropy",
@@ -64,8 +75,8 @@ model.summary()
 history = model.fit_generator(generator=data_generator,
     epochs=5,
     use_multiprocessing=True,
-    callbacks=[checkpoint_callback],
+    callbacks=[checkpoint_callback, custom_checkpoint],
     validation_data=validation_generator)
-model.save("s2s.7052019")
+model.save("s2s.without-text-nodes")
 with open("history.json", "w+") as f:
     json.dump(history.history, f)

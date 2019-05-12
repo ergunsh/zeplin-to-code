@@ -95,3 +95,7 @@ s2s.initial
 sample-data/
 dist/
 weights/
+dataset-body/
+dataset-body-2/
+out-websites/
+out-without-text-nodes/

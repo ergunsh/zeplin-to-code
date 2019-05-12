@@ -2,10 +2,10 @@ import * as tf from "@tensorflow/tfjs";
 import * as utils from "./utils";
 import dslToRN from "../../compiler/dsl-to-rn";
 
-const max_decoder_seq_length = 10000;
+const max_decoder_seq_length = 1000;
 const depth = 2;
 let sampleFn;
-tf.loadLayersModel("http://localhost:7070/best-of-three-model/model.json").then(model => {
+tf.loadLayersModel("http://localhost:7070/js-flex-model/model.json").then(model => {
     const { encoder_model, decoder_model } = assemblyModel(model);
     sampleFn = get_sampler({
         encoder_model,
