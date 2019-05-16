@@ -1,4 +1,5 @@
 # Generating UI layout code from Zeplin screens and components using a seq2seq network
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 ## Introduction
 The aim of the project is to layout UI code from Zeplin screens and components in React Native
 
