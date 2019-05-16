@@ -1,1 +1,0 @@
-// Extension is a proper entry for Zeplin extension
