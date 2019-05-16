@@ -53,6 +53,7 @@ decoder_outputs = decoder_dense(decoder_outputs)
 # `encoder_input_data` & `decoder_input_data` into `decoder_target_data`
 model = models.Model([encoder_inputs, decoder_inputs], decoder_outputs)
 
+# model = models.load_model("./weights/weights-improvement-long-01-0.7595.hdf5")
 weigth_file="./weights/weights-improvement-long-{epoch:02d}-{categorical_accuracy:.4f}.hdf5"
 checkpoint_callback = callbacks.ModelCheckpoint(weigth_file, monitor='categorical_accuracy', verbose=1, save_best_only=True, mode='max')
 
@@ -63,7 +64,7 @@ class CustomCheckpoint(callbacks.Callback):
     def on_batch_end(self, batch, logs=None):
         self.current_batch_number = self.current_batch_number + 1
         if self.current_batch_number % 100 == 0: # Save at every 100 data
-            save_path = "./weights/last-model-" + str(self.current_batch_number) + ".hdf5"
+            save_path = "./weights/last-model-long-continue-" + str(self.current_batch_number) + ".hdf5"
             self.model.save(save_path)
 
 custom_checkpoint = CustomCheckpoint()
@@ -73,7 +74,7 @@ model.compile(optimizer="rmsprop",
     metrics=["categorical_accuracy"])
 model.summary()
 history = model.fit_generator(generator=data_generator,
-    epochs=5,
+    epochs=3,
     use_multiprocessing=True,
     callbacks=[checkpoint_callback, custom_checkpoint],
     validation_data=validation_generator)
