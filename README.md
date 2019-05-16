@@ -1,4 +1,4 @@
-# Generating UI layout code from Zeplin screens and components
+# Generating UI layout code from Zeplin screens and components using a seq2seq network
 ## Introduction
 The aim of the project is to layout UI code from Zeplin screens and components in React Native
 
