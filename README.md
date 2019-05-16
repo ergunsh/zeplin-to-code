@@ -1,23 +1,7 @@
-# Generating semantic UI code from Zeplin screens and components
+# Generating UI layout code from Zeplin screens and components
 ## Introduction
-The aim of the project is to generate semantic UI code from Zeplin screens and components in React Native.
+The aim of the project is to layout UI code from Zeplin screens and components in React Native
 
-## Glossary
-* __Zeplin screens and components__ are two well defined data structures that contain enough information for any design to be implemented in any UI platform by a developer. Zeplin screens could also contain components.
-
-* __Semantic UI code__ is the UI code introducing meaning of the elements in the design to the platform's markup language rather than just presentation. As an example, a `<h1>` tag gives the text it wraps around the meaning of "a top level heading on the page" in HTML.
-
-* __React__ is a Javascript library for building user interfaces. It is generally used with an HTML like syntax called JSX.
-
-* __React Native__ is a framework to build native mobile apps using Javascript and React. Although it specifically started as a way to build native mobile apps using Javascript; its' scope is extended to include other target platforms such as web, windows, mac etc.
-
-* __React Native components__ are basic building blocks for a user interface such as
-    - `View` - a component to separate parts of the UI
-    - `Text` - a component to render text
-    - `Image` - a component to render image
-    - `StyleSheet` - a component to specify visual and layout properties of a component very similar to CSS StyleSheets.
-
-With the help of these definitions; we can rephrase our aim as to translate a design represented by well defined data structures to JSX code with React Native components.
 ## High Level Requirements
 * Output of the generated code shall match the design specs given by screen and component data structures.
 * Generated code shall be usable by a developer building on top of the design given by data structures. So, a typical workflow of a developer could be; `see the design -> generate code of the design -> implement business logic over that generated UI code`.
@@ -28,6 +12,51 @@ With the help of these definitions; we can rephrase our aim as to translate a de
 * After extracting layout details; we need to generate code that also contains styling of the components. (Getting style information from the data is trivial since that representation maps to implementation)
 * The non-trivial part of generating code after extracting layout details is understanding the semantic context of the component. Is this a `Heading` or is this component a `List` component that includes other components…
 * After understanding semantic context of the components, we can generate the code.
+
+## Current state
+Currently, we've only dealt with extracting layout details and generating a code containing them using a seq2seq deep learning model.
+
+## Usage instructions
+You can follow the same steps to redo the experiments.
+
+### Scraper
+This module downloads website rectangles and markup from top 1 million Alexa websites database and converts them to dataset structure with rectangles as `x` and output markup as `y`.
+
+```sh
+npm install
+npm run download-html # Downloads html files into "scraper/out" directory
+npm run generate-dataset # Converts downloaded html to ".json" files with dataset file structure.
+```
+
+### Compiler
+This module converts "scraper/dataset" file with html markup to data points with DSL markup. Also, exports a function for converting DSL code to RN code.
+
+To convert dataset with html markup to data points with DSL markup; we run
+```sh
+node compiler/index.js --decompile # You can change the datasetDir in "compiler/index.js" to point another folder
+```
+
+### Training
+After the upper steps are completed, we have a dataset that our model understands.
+
+You need to install `tensorflow`, `keras` and `numpy` for model.
+
+To point out to the newly database we've created; change `dir_path` of dataset generator in "model.py"
+Also, there are some parameters that in the code fine tuned for my environment; you can freely remove or adjust them.
+
+Then you run `python model.py`. This saves our model improvements into `weights/` for each epoch.
+
+After the training complete and you have saved models. You can convert them using `tensorflowjs_converter`. To do that, you need `tensorflowjs` dependency as well.
+```
+pip install tensorflowjs
+```
+
+Then follow the instructions in here: https://github.com/tensorflow/tfjs-converter
+
+### Zeplin Extension
+Currently, in `zpl-extension` folder; there is an extension with pretrained and converted models. You can open `index.js` and change `tf.loadLayersModel` function's argument to try with different models.
+
+You can follow running a Zeplin Extension and using it in Zeplin instructions from here: https://github.com/zeplin/zem
 
 ## Similar studies
 * [Airbnb - Sketching interfaces](https://airbnb.design/sketching-interfaces/) — Creating code from low fidelity wireframes
