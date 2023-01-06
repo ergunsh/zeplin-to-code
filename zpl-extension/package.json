@@ -17,6 +17,6 @@
   },
   "dependencies": {
     "@tensorflow/tfjs": "^1.1.0",
-    "zem": "^0.3.5"
+    "zem": "^1.3.1"
   }
 }
